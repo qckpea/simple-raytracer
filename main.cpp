@@ -17,16 +17,35 @@ struct ray {
     }
 };
 
-v3 ray_color(const ray& r) {
+bool32 HitSphere(point3 center, r32 radius, ray r)
+{
+    v3 centerToOrigin = r.orig - center;
+    r32 a = DotProduct(r.dir, r.dir);
+    r32 b = 2.0f * DotProduct(centerToOrigin, r.dir);
+    r32 c = DotProduct(centerToOrigin, centerToOrigin) - radius * radius;
+    
+    r32 discriminant = b*b - 4*a*c;
+    return discriminant > 0;
+}
+
+v3 RayColor(const ray& r) {
+    if(HitSphere(point3{0.0f, 0.0f, -1.0f}, 0.5f, r))
+    {
+        return {0.0f, 1.0f, 0.0f};
+    }
+#if 1
     v3 unit_direction = Normalize(r.dir);
+#else
+    v3 unit_direction = r.dir;
+#endif
     r32 t = 0.5f * (unit_direction.y + 1.0f);
     v3 bg = {1.0f, 1.0f, 1.0f};
-    v3 fg = {0.5f, 0.7f, 1.0f};
+    v3 fg = {1.0f, 0.0f, 0.0f};
     return (1.0f - t) * bg + t * fg;
 }
 
 void WriteHeader(FILE *f) {
-    fprintf(f, "P3\n");
+    fprintf(f, "P6\n");
     fprintf(f, "%d ", IMG_WIDTH);
     fprintf(f, "%d \n", IMG_HEIGHT);
     fprintf(f, "%d \n", MAX_COLOR_VALUE);
@@ -74,7 +93,7 @@ int main() {
                 r32 u = ((r32)i / IMG_WIDTH);
                 r32 v = ((r32)j / IMG_HEIGHT);
                 ray r = {camera_origin, lower_left_corner + (u * horizontal) + (v * vertical) - camera_origin};
-                v3 color = ray_color(r);
+                v3 color = RayColor(r);
                 WritePixelColor(f, color);
             }
         }
