@@ -34,5 +34,8 @@
 #created .ppm files
 *.ppm
 
+#build dir
+build
+
 #VS Code
 .vscode
