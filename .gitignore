@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+#created .ppm files
+*.ppm
+
+#VS Code
+.vscode
